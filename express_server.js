@@ -23,8 +23,9 @@ var urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-
-  res.render("urls_home")
+  let templateVars = { urls: urlDatabase, username: req.cookies["username"]};
+  console.log(templateVars);
+  res.render("urls_home", templateVars)
 });
 
 app.get("/urls", (req, res) => {
