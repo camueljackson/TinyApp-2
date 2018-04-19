@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <header><% include ./partials/_header %></header>
+    <h1>Welcome to TinyApp!</h1>
+
+    <a href="new/" target="_blank">Shorten your URL!</a>
+    <br>
+    <br>
+    <br>
+
+<table style="width:100%">
+  <tr>
+    <th>Short URL</th>
+    <th>Long URL</th>
+    <th>Action</th>
+  </tr>
+  <tr>
+    <% for ( var objkey in urls ) { %>
+    <td><%=[objkey]%></td>
+    <td><%=urls[objkey]%> </td>
+    <td><form method="POST" action="/urls/<%=[objkey]%>/delete"><input type="submit" value = "delete"></input></form>
+     <a href="/urls/<%=objkey%>" target="_blank">Edit</a>
+</td>
+  </tr>
+  <% } %>
+  <tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <header><% include partials/_header %></header>
+    <ul>
+        <li>Short URL: <%=shortURL%> </li>
+    </ul>
+    </body>
+</html>
+
+<form action="/urls/<%=shortURL%>" method="POST" style="width:300px">
+
+      <input id="longURL" type="text" name="longURL"
+
+
+      value=<%=longURL%> target="_blank">
+
+      <input type="submit" value="update">
+
+    </form>
+    <br>
+    <br>
+    <a href="www.iflscience.com" target="_blank">Shorten your URL!</a>
