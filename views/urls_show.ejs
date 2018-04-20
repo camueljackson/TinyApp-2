@@ -4,12 +4,13 @@
     <header><% include partials/_header %></header>
     <ul>
         <li>Short URL: <%=shortURL%> </li>
+        <li>Long URL: <%=longURL%> </li>
     </ul>
 <form action="/urls/<%=shortURL%>" method="POST" style="width:300px">
 
-      <input id="longURL" type="text" value="<%=longURL%>">
+      <input id="longURL" type="text" value="<%=longURL%>" name="longURL">
 
-      <input type="submit" value="update" name="login" placeholder="login">
+      <input type="submit" value="update">
 
     </form>
     <br>

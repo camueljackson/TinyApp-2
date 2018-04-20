@@ -3,12 +3,14 @@ var app = express();
 var PORT = process.env.PORT || 8080;
 app.set("view engine", "ejs");
 
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
-var cookieParser = require('cookie-parser')
-app.use(cookieParser())
+// const bcrypt = require('bcrypt');
 
 // *************************
 
@@ -18,8 +20,14 @@ function generateRandomString() {
 }
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    "longURL": "http://www.lighthouselabs.ca",
+    "userID": "userRandomID",
+  },
+  "9sm5xK": {
+    "longURL": "http://www.google.com",
+    "userID": "user3RandomID"
+  }
 };
 
 var users = {
@@ -42,12 +50,12 @@ var users = {
 
 // ******************************
 
-
+/* HOME PAGE */
 app.get("/", (req, res) => {
-  let userID = req.cookies["user_id"];
-  let user = users[userID];
+  let userID = req.cookies["user_id"]; //userID set to unique cookie
+  let user = users[userID]; // user euqal to the object "users database- Key: unique ID"
 
-  let templateVars = {
+  let templateVars = {  // templateVars object contains "user" detailed above
    user: user
  };
 
@@ -55,23 +63,26 @@ app.get("/", (req, res) => {
  });
 
 
+/* LIST OF URLS */
 app.get("/urls", (req, res) => {
-  let userID = req.cookies["user_id"];
-  let user = users[userID];
+  let userID = req.cookies["user_id"]; // userID set to unique cookie
+  let user = users[userID]; // user euqal to the object "users database- Key: unique ID"
 
-  let templateVars = {
+  let templateVars = { // templateVars object contains "user" and "URL database"
     urls: urlDatabase,
-   user: user
+    user: user
  };
+
   res.render("urls_index", templateVars);
 });
 
 
+/* REGISTRATION PAGE*/
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
-
+/* REGISTRATION PAGE*/
 app.post("/register", (req, res) => {
   let randomID = generateRandomString();
   let email = req.body.email
@@ -86,8 +97,6 @@ app.post("/register", (req, res) => {
     if (email === users[userInfo].email) { // looping through my users obj, userInfo is rando ID
       res.statusCode = 400;
       res.send('Error 400 -- Email already in use');
-      console.log("rightSide", email);
-      console.log("longassone", users[userInfo].email);
       return;
     }
   }
@@ -104,25 +113,22 @@ app.post("/register", (req, res) => {
 
 
 app.get("/urls/new", (req, res) => {
-
-  let userID = res.cookie["user_id"]; // user ID is equal to my cookie which stores my random user ID
-  let user = users[userID];
-
-  let templateVars = {
-    user: user
-  };
-
-  res.render("urls_new", templateVars);
+  let currentUser = req.cookies["user_id"]
+  if (!currentUser) {
+    res.redirect("/login");
+  } else {
+    res.render("urls_new");
+  }
 });
 
 
 app.get("/urls/:id", (req, res) => {
-  const shortURL = req.params.id;
-  let userID = res.cookie["user_id"];
-  let user = users[userID];
+  const shortURL = req.params.id; // shortURL var created
+  let userID = res.cookie["user_id"]; // userID = that specific cookie
+  let user = users[userID]; //navigating in users database, using the unique key
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[shortURL],
+    longURL: urlDatabase[shortURL].longURL,
     user: user
   };
 
@@ -131,7 +137,10 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id] = {
+    longURL: req.body.longURL
+  }
+
   res.redirect("/urls");
 });
 
@@ -139,9 +148,11 @@ app.post("/urls/:id", (req, res) => {
 app.get("/login", (req, res) => {
   let userID = req.cookies["user_id"];
   let user = users[userID];
+  let email = req.body.email
 
   let templateVars = {
-   user: user
+   user: user,
+   email: email
  };
 
  res.render("login", templateVars)
@@ -155,7 +166,7 @@ app.post("/login", (req, res) => {
   let found = false;
   let foundPassword = false;
 
-  for (const userID in users) {           // looping through my users object
+  for (const userID in users) {
     if (email == users[userID].email) {
       found = true;
     }
@@ -164,9 +175,9 @@ app.post("/login", (req, res) => {
     for (const findPW in users) {
       if (password == users[findPW].password) {
         foundPassword = true;
-        console.log("found password!")
+
         res.cookie("user_id", users[findPW].id);
-        res.redirect("/");
+        res.redirect("/urls");
 
       }
     }
@@ -185,15 +196,22 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.cookie("user_id");
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/urls/home");
 });
 
 app.post("/urls", (req, res) => {
-  var randomString = generateRandomString();
-  urlDatabase[randomString] = req.body["longURL"];
-  res.redirect("/urls/" + randomString);
-});
+  let longURL = req.body.longURL
+  let userID = res.cookie("user_id");
+  let shortURL = generateRandomString(); // random url being generated with the long URL you create
 
+  urlDatabase[shortURL] = {
+    "longURL": longURL,
+    "userID": userID
+  }
+  // { shortURL: req.body.shortURL, userID: req.cookies.user_id}
+
+  res.redirect("/urls/" + shortURL); // brings you back to the urls database page along with the random string generated
+});
 
 // DELETE
 
@@ -209,8 +227,11 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   let userID = req.cookies["user_id"];
   let user = users[userID];
-  let templateVars = {user: user};
   let longURL = urlDatabase[req.params.shortURL];
+  let templateVars = {
+    user: user,
+    longURL: longURL
+  };
   res.redirect(longURL);
 });
 

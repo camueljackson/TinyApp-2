@@ -1,0 +1,24 @@
+{
+  "name": "tinyapp-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "express_server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/camueljackson/TinyApp-2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/camueljackson/TinyApp-2/issues"
+  },
+  "homepage": "https://github.com/camueljackson/TinyApp-2#readme",
+  "dependencies": {
+    "ejs": "^2.5.9",
+    "express": "^4.16.3",
+    "bcrypt": "^0.8"
+  }
+}
