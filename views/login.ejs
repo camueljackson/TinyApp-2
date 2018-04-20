@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head></head>
+
+  <body style="font-size:20px; padding:50px;">
+
+    <% include partials/_header %>
+
+
+  <%= user%>
+
+<% if(!user) { %>
+
+<form action="/login" method="POST" style="width:300px">
+
+      <input placeholder="email" type="email" name="email">
+
+      <input placeholder="password" type="password" name="password">
+
+      <button type="submit"> Submit </button>
+
+
+<% } else { %>
+
+  <form action="/logout" method="POST">
+
+      <input type="submit" value="logout">
+
+    </form>
+
+<% } %>
+
+</body>
+</html>

@@ -81,27 +81,21 @@ app.post("/register", (req, res) => {
     email: email,
     password: password
   }
+  users[randomID] = newUser //  meaning the random new ID can be added to the user database and take a value of the NewUser object
+  res.cookie("user_id", randomID) // user_ID is the name of my cookie, and neUser is the value that the cookie stores
 
-  for (const userInfo in users) {
-    if (email === users[userInfo].email) { // looping through my users obj, userInfo is rando ID
-      res.statusCode = 400;
-      res.send('Error 400 -- Email already in use');
-      console.log("rightSide", email);
-      console.log("longassone", users[userInfo].email);
-      return;
-    }
-  }
-  if (email === "" || password === "") {
+  if (email == "" || password == "") {
     res.statusCode = 400;
     res.send('Error 400 -- Invalid Credentials');
-    return;
-  }
-    users[randomID] = newUser //  meaning the random new ID can be added to the user database and take a value of the NewUser object
-    res.cookie("user_id", randomID) // user_ID is the name of my cookie, and randomid is the value that the cookie stores
+
+  } else if (email == email) {
+    res.status = 400;
+    res.send('Error 400 -- email in use');
+
+  } else {
     res.redirect("/urls");
+  }
 });
-
-
 
 app.get("/urls/new", (req, res) => {
 

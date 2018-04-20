@@ -5,19 +5,16 @@
     <ul>
         <li>Short URL: <%=shortURL%> </li>
     </ul>
-    </body>
-</html>
-
 <form action="/urls/<%=shortURL%>" method="POST" style="width:300px">
 
-      <input id="longURL" type="text" name="longURL"
+      <input id="longURL" type="text" value="<%=longURL%>">
 
-
-      value=<%=longURL%> target="_blank">
-
-      <input type="submit" value="update">
+      <input type="submit" value="update" name="login" placeholder="login">
 
     </form>
     <br>
     <br>
     <a href="new/" target="_blank">Shorten your URL!</a>
+
+ </body>
+</html>

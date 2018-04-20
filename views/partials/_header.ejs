@@ -10,29 +10,13 @@
 
 <body>
 
-  <h1><a href="urls"><font hex color="#52467E">My Tiny App</font></a></h1>
+  <h1><a href="/urls"><font hex color="#52467E">My Tiny App</font></a></h1>
 
-  <%= username%>
+  <ul>
+  <li><a href="/register">Register</a></li>
+  <li><a href="/login">Login</a></li>
 
-<% if(!username) { %>
-
-<form action="/login" method="POST">
-
-      <input id="username" type="text" name="username" placeholder="username">
-
-      <input type="submit" value="Sign in">
-
-    </form>
-
-<% } else { %>
-
-  <form action="/logout" method="POST">
-
-      <input type="submit" value="logout">
-
-    </form>
-
-<% } %>
+</ul>
 
 </body>
 
