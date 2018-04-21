@@ -4,7 +4,7 @@
 <body>
   <header><% include ./partials/_header %></header>
 
-  <a href="/urls/new" target="_blank">Shorten your URL!</a>
+  <a href="/urls/new">Shorten your URL!</a>
   <br>
   <br>
   <br>
@@ -19,11 +19,13 @@
 
       <form method="POST" action="/urls/<%=[objkey]%>/delete">
 
+        <br>
+
       <input type="submit" value = "delete"></input>
 
       </form>
 
-      <a href="/urls/<%=objkey%>" target="_blank">Edit</a>
+      <a href="/urls/<%=objkey%>">Edit</a>
 
 <% } %>
 

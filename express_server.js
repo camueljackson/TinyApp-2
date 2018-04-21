@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 
 // *************************
 
@@ -64,7 +64,7 @@ app.get("/", (req, res) => {
 
 
 /* LIST OF URLS */
-app.get("/urls", (req, res) => {
+app.get("/urls", (req, res) => {  //
   let userID = req.cookies["user_id"]; // userID set to unique cookie
   let user = users[userID]; // user euqal to the object "users database- Key: unique ID"
 
@@ -75,7 +75,6 @@ app.get("/urls", (req, res) => {
 
   res.render("urls_index", templateVars);
 });
-
 
 /* REGISTRATION PAGE*/
 app.get("/register", (req, res) => {
@@ -111,24 +110,27 @@ app.post("/register", (req, res) => {
 });
 
 
+/* ADDING URLS to the urls database */
 
-app.get("/urls/new", (req, res) => {
-  let currentUser = req.cookies["user_id"]
-  if (!currentUser) {
-    res.redirect("/login");
-  } else {
-    res.render("urls_new");
+app.get("/urls/new", (req, res) => {    //
+  let userID = req.cookies["user_id"];
+  let templateVars = {
+    user: users[userID],
+    urls: urlDatabase
   }
+  res.render("urls_new", templateVars);
 });
 
 
+/*  */
+
 app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id; // shortURL var created
-  let userID = res.cookie["user_id"]; // userID = that specific cookie
+  let userID = req.cookies["user_id"]; // userID = that specific cookie
   let user = users[userID]; //navigating in users database, using the unique key
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[shortURL].longURL,
+    longURL: urlDatabase[req.params.id].longURL,
     user: user
   };
 
@@ -137,11 +139,13 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.post("/urls/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const userID = res.cookies["user_id"];
   urlDatabase[req.params.id] = {
-    longURL: req.body.longURL
+    longURL: req.body.longURL,
+    createdBy: res.cookie["user_id"]
   }
-
-  res.redirect("/urls");
+  res.redirect('/urls');
 });
 
 
@@ -196,12 +200,13 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.cookie("user_id");
   res.clearCookie("user_id");
-  res.redirect("/urls/home");
+  res.redirect("/");
 });
+
 
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL
-  let userID = res.cookie("user_id");
+  let userID = req.cookies["user_id"];
   let shortURL = generateRandomString(); // random url being generated with the long URL you create
 
   urlDatabase[shortURL] = {
@@ -218,7 +223,8 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   let shortURL = req.params.id;
   delete urlDatabase[shortURL];
-  res.redirect("/urls/");
+
+  res.redirect("/urls");
 });
 
 

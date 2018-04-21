@@ -6,8 +6,8 @@
         <li>Short URL: <%=shortURL%> </li>
         <li>Long URL: <%=longURL%> </li>
     </ul>
-<form action="/urls/<%=shortURL%>" method="POST" style="width:300px">
-
+<form action="/urls" method="POST" style="width:300px">
+<!-- /<%=shortURL%> -->
       <input id="longURL" type="text" value="<%=longURL%>" name="longURL">
 
       <input type="submit" value="update">
@@ -15,7 +15,9 @@
     </form>
     <br>
     <br>
-    <a href="new/" target="_blank">Shorten your URL!</a>
+    <a href="/urls" >See your URLs!</a>
+    <br>
+    <a href="/urls/new" >Shorten your URL!</a>
 
  </body>
 </html>

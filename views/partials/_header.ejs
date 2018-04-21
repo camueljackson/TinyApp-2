@@ -13,8 +13,14 @@
   <h1><font face ="verdana" font hex color="#496cb0">My Tiny App</font></h1>
 
   <ul>
-  <li><a href="/register">Register</a></li>
+
+  <% if (!user) { %>
   <li><a href="/login">Login</a></li>
+   <li><a href="/register">Register</a></li>
+
+  <% } %>
+
+
 
 </ul>
 
