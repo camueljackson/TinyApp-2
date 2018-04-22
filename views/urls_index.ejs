@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <body>
@@ -10,29 +11,17 @@
   <br>
 
   <% if (user) { %>
-
       <% for ( var objkey in urls ) { %>
-
       <%=objkey%>
-
        <%=urls[objkey].longURL%>
-
-<table style="width:60%">
-  <tr>
-    <th><form method="POST" action="/urls/<%=[objkey]%>/delete"> </th>
-    <th><input type="submit" value = "delete">   <a href="/urls/<%=objkey%>">Edit</a></input></th>
-  </tr>
-  <tr>
-  </form>
-</table>
-
-
+      <form method="POST" action="/urls/<%=[objkey]%>/delete">
+        <br>
+      <input type="submit" value = "delete"></input>
+      </form>
+      <a href="/urls/<%=objkey%>">Edit</a>
 <% } %>
-
 <%} else { %>
-
 <p><a href = "login">Please login</a>  </p>
-
 <% } %>
 
 </body>

@@ -82,10 +82,12 @@ app.get("/urls", (req, res) => {  //
   res.render("urls_index", templateVars);
 });
 
+
 /* REGISTRATION PAGE*/
 app.get("/register", (req, res) => {
   res.render("register");
 });
+
 
 /* REGISTRATION PAGE*/
 app.post("/register", (req, res) => {
@@ -111,6 +113,7 @@ app.post("/register", (req, res) => {
     res.send('Error 400 -- Invalid Credentials');
     return;
   }
+
     users[randomID] = newUser //  meaning the random new ID can be added to the user database and take a value of the NewUser object
     req.session.user_id = randomID; // user_ID is the name of my cookie, and randomid is the value that the cookie stores
     res.redirect("/urls");
@@ -131,11 +134,11 @@ app.get("/urls/new", (req, res) => {    //
 });
 
 
-/*  */
+/*  SHOW page after URLS shortened */
 
 app.get("/urls/:id", (req, res) => {
-  const shortURL = req.params.id; // shortURL var created
   req.session.user_id = 'user_id';// userID = that specific cookie
+  const shortURL = req.params.id; // shortURL var created
   let user = users['user_id']; //navigating in users database, using the unique key
   let templateVars = {
     shortURL: req.params.id,
@@ -147,9 +150,10 @@ app.get("/urls/:id", (req, res) => {
 });
 
 
+/* SHOW page */
 app.post("/urls/:id", (req, res) => {
-  const shortURL = req.params.id;
   req.session.user_id = 'user_id';
+  const shortURL = req.params.id;
   urlDatabase[req.params.id] = {
     longURL: req.body.longURL,
     createdBy: req.session.user_id
@@ -157,7 +161,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
-
+/* LOGIN page*/
 app.get("/login", (req, res) => {
   req.session.user_id = 'user_id';
   let user = users['user_id'];
@@ -172,6 +176,7 @@ app.get("/login", (req, res) => {
  });
 
 
+/* LOGIN post */
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
@@ -209,14 +214,16 @@ app.post("/login", (req, res) => {
 
   });
 
-app.post("/logout", (req, res) => {
 
+/* LOGOUT */
+app.post("/logout", (req, res) => {
   req.session.user_id;
   req.session = null;
   res.redirect("/");
 });
 
 
+/* ADDING URLS*/
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL
   req.session.user_id = 'user_id';
@@ -224,7 +231,7 @@ app.post("/urls", (req, res) => {
 
   urlDatabase[shortURL] = {
     "longURL": longURL,
-    "userID": 'user_id'
+    "userID": req.session.user_id
   }
   // { shortURL: req.body.shortURL, userID: req.cookies.user_id}
 
