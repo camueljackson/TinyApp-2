@@ -7,10 +7,10 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-var cookieParser = require('cookie-parser');
+var cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 // *************************
 
@@ -23,10 +23,11 @@ var urlDatabase = {
   "b2xVn2": {
     "longURL": "http://www.lighthouselabs.ca",
     "userID": "userRandomID",
+
   },
   "9sm5xK": {
     "longURL": "http://www.google.com",
-    "userID": "user3RandomID"
+    "userID": "user3RandomID",
   }
 };
 
@@ -53,27 +54,39 @@ var users = {
 /* HOME PAGE */
 app.get("/", (req, res) => {
   let userID = req.cookies["user_id"]; //userID set to unique cookie
-  let user = users[userID]; // user euqal to the object "users database- Key: unique ID"
+  let user = users[userID]; // user equal to the object "users database- Key: unique ID"
 
-  let templateVars = {  // templateVars object contains "user" detailed above
-   user: user
- };
+  let templateVars = {  // available info
+  user: user
+};
 
-   res.render("urls_home", templateVars)
- });
+res.render("urls_home", templateVars)
+});
+
+
+app.get("_header", (req, res) => {
+  let userID = req.cookies["user_id"];
+  let user = users[userID];
+  let templateVars = {
+    "user": users[userID]
+  }
+  res.render();
+});
 
 
 /* LIST OF URLS */
-app.get("/urls", (req, res) => {  //
-  let userID = req.cookies["user_id"]; // userID set to unique cookie
-  let user = users[userID]; // user euqal to the object "users database- Key: unique ID"
+app.get("/urls", (req, res) => {
+  let userID = req.cookies["user_id"];
+  let user = users[userID];
 
   let templateVars = { // templateVars object contains "user" and "URL database"
-    urls: urlDatabase,
-    user: user
- };
+  urls: urlDatabase,
+  user: user
+};
 
-  res.render("urls_index", templateVars);
+
+
+res.render("urls_index", templateVars);
 });
 
 /* REGISTRATION PAGE*/
@@ -84,8 +97,8 @@ app.get("/register", (req, res) => {
 /* REGISTRATION PAGE*/
 app.post("/register", (req, res) => {
   let randomID = generateRandomString();
-  let email = req.body.email
-  let password = req.body.password
+  let email = req.body.email;
+  let password = req.body.password;
   let hashedPassword = bcrypt.hashSync(password, 10)
   let newUser = {
     id: randomID,
@@ -96,21 +109,21 @@ app.post("/register", (req, res) => {
   for (const userInfo in users) {
     if (email === users[userInfo].email) { // looping through my users obj, userInfo is rando ID
       res.statusCode = 400;
-      res.send('Error 400 -- Email already in use');
+      res.send("Error 400 -- Email already in use");
       return;
     }
   }
   if (email === "" || password === "") {
     res.statusCode = 400;
-    res.send('Error 400 -- Invalid Credentials');
+    res.send("Error 400 -- Invalid Credentials");
     return;
   }
-    users[randomID] = newUser //  meaning the random new ID can be added to the user database and take a value of the NewUser object
+    users[randomID] = newUser; //  meaning the random new ID can be added to the user database and take a value of the NewUser object
     res.cookie("user_id", randomID) // user_ID is the name of my cookie, and randomid is the value that the cookie stores
     res.redirect("/urls");
 
     console.log(users);
-});
+  });
 
 
 /* ADDING URLS to the urls database */
@@ -146,9 +159,9 @@ app.post("/urls/:id", (req, res) => {
   const userID = res.cookies["user_id"];
   urlDatabase[req.params.id] = {
     longURL: req.body.longURL,
-    createdBy: res.cookie["user_id"]
+    createdBy: req.cookie["user_id"]
   }
-  res.redirect('/urls');
+  res.redirect("/urls");
 });
 
 
@@ -163,7 +176,7 @@ app.get("/login", (req, res) => {
  };
 
  res.render("login", templateVars)
- });
+});
 
 
 app.post("/login", (req, res) => {
@@ -180,7 +193,9 @@ app.post("/login", (req, res) => {
       found = true;
     }
   }
-    if (found == true) {
+
+// if email has been found in the database, loop through passwords in database to find matching password and user login info
+  if (found == true) {
     for (const findPW in users) {
       let currentPassW = users[findPW].password;
       if (bcrypt.compareSync(currentPassW, hashedPassword)) {
@@ -197,11 +212,11 @@ app.post("/login", (req, res) => {
     res.status(403).send("Error 403 -- Not an email");
 
 
-   } if (foundPassword == false) {
+  } if (foundPassword == false) {
     res.status(403).send("Error 403 -- Not a password");
-   }
+  }
 
-  });
+});
 
 app.post("/logout", (req, res) => {
   res.cookie("user_id");
@@ -219,6 +234,12 @@ app.post("/urls", (req, res) => {
     "longURL": longURL,
     "userID": userID
   }
+
+  app.post("/urls", (req, res) => {
+
+
+});
+
   // { shortURL: req.body.shortURL, userID: req.cookies.user_id}
 
   res.redirect("/urls/" + shortURL); // brings you back to the urls database page along with the random string generated
