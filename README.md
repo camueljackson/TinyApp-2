@@ -24,5 +24,4 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - Run the development web server using the `node express_server.js` command.
 
 
-Note:  a version of the server is available which uses cookie-session instead of cookie-parser. The cookie-server version does not 
-keep track of cookies at this time, but further work will result in the cookie-session being fully implemented.
+Note:  a version of the server is available which uses cookie-session instead of cookie-parser. The cookie-session version does not keep track of cookies at this time, but further work will result in the cookie-session being fully implemented.
