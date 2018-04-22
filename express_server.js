@@ -86,10 +86,11 @@ app.post("/register", (req, res) => {
   let randomID = generateRandomString();
   let email = req.body.email
   let password = req.body.password
+  let hashedPassword = bcrypt.hashSync(password, 10)
   let newUser = {
     id: randomID,
     email: email,
-    password: password
+    password: hashedPassword
   }
 
   for (const userInfo in users) {
@@ -107,6 +108,8 @@ app.post("/register", (req, res) => {
     users[randomID] = newUser //  meaning the random new ID can be added to the user database and take a value of the NewUser object
     res.cookie("user_id", randomID) // user_ID is the name of my cookie, and randomid is the value that the cookie stores
     res.redirect("/urls");
+
+    console.log(users);
 });
 
 
@@ -167,6 +170,8 @@ app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
 
+  let hashedPassword = bcrypt.hashSync(password, 10);
+
   let found = false;
   let foundPassword = false;
 
@@ -177,7 +182,8 @@ app.post("/login", (req, res) => {
   }
     if (found == true) {
     for (const findPW in users) {
-      if (password == users[findPW].password) {
+      let currentPassW = users[findPW].password;
+      if (bcrypt.compareSync(currentPassW, hashedPassword)) {
         foundPassword = true;
 
         res.cookie("user_id", users[findPW].id);

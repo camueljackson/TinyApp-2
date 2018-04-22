@@ -17,15 +17,15 @@
 
        <%=urls[objkey].longURL%>
 
-      <form method="POST" action="/urls/<%=[objkey]%>/delete">
+<table style="width:60%">
+  <tr>
+    <th><form method="POST" action="/urls/<%=[objkey]%>/delete"> </th>
+    <th><input type="submit" value = "delete">   <a href="/urls/<%=objkey%>">Edit</a></input></th>
+  </tr>
+  <tr>
+  </form>
+</table>
 
-        <br>
-
-      <input type="submit" value = "delete"></input>
-
-      </form>
-
-      <a href="/urls/<%=objkey%>">Edit</a>
 
 <% } %>
 
