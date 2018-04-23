@@ -198,7 +198,7 @@ app.post("/login", (req, res) => {
   if (found == true) {
     for (const findPW in users) {
       let currentPassW = users[findPW].password;
-      if (bcrypt.compareSync(currentPassW, hashedPassword)) {
+      if (bcrypt.compareSync(inputPassword, userPassword)) {
         foundPassword = true;
 
         res.cookie("user_id", users[findPW].id);
