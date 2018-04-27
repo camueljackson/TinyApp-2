@@ -1,13 +1,13 @@
-var express = require("express");
-var app = express();
-var PORT = process.env.PORT || 8080;
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 8080;
 app.set("view engine", "ejs");
 
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-var cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const bcrypt = require("bcrypt");
@@ -155,10 +155,11 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.post("/urls/:id", (req, res) => {
-  const shortURL = req.params.id;
-  const userID = res.cookies["user_id"];
+  let shortURL = req.params.id;
+  let userID = res.cookies["user_id"];
+  let longURL = req.body.longURL;
   urlDatabase[req.params.id] = {
-    longURL: req.body.longURL,
+    longURL: longURL,
     createdBy: req.cookie["user_id"]
   }
   res.redirect("/urls");
@@ -181,9 +182,9 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   let email = req.body.email;
-  let password = req.body.password;
+  let inputPassword = req.body.password;
 
-  let hashedPassword = bcrypt.hashSync(password, 10);
+  let hashedPassword = bcrypt.hashSync(inputPassword, 10);
 
   let found = false;
   let foundPassword = false;
@@ -196,9 +197,9 @@ app.post("/login", (req, res) => {
 
 // if email has been found in the database, loop through passwords in database to find matching password and user login info
   if (found == true) {
-    for (const findPW in users) {
+    for (let findPW in users) {
       let currentPassW = users[findPW].password;
-      if (bcrypt.compareSync(inputPassword, userPassword)) {
+      if (bcrypt.compareSync(inputPassword, hashedPassword)) {
         foundPassword = true;
 
         res.cookie("user_id", users[findPW].id);
