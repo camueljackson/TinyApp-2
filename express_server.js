@@ -7,8 +7,14 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
+var cookieSession = require('cookie-session')
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ["It's not easy being a cookie"],
+
+  maxAge: 24 * 60 * 60 * 1000
+}))
 
 const bcrypt = require("bcrypt");
 
@@ -52,8 +58,7 @@ var users = {
 
 /* HOME PAGE */
 app.get("/", (req, res) => {
-  let userID = req.cookies["user_id"]; //userID set to unique cookie
-  let user = users[userID]; // user equal to the object "users database- Key: unique ID"
+  let user = users[req.session.user_id];
 
   let templateVars = {  // available info
   user: user
@@ -75,9 +80,9 @@ res.render("urls_home", templateVars)
 
 /* LIST OF URLS */
 app.get("/urls", (req, res) => {
-  let userID = req.cookies["user_id"];
-  let user = users[userID];
-
+  console.log(users);
+  console.log(req.session);
+  let user = users[req.session.user_id];
   let templateVars = { // templateVars object contains "user" and "URL database"
   urls: urlDatabase,
   user: user
@@ -118,7 +123,7 @@ app.post("/register", (req, res) => {
     return;
   }
     users[randomID] = newUser; //  meaning the random new ID can be added to the user database and take a value of the NewUser object
-    res.cookie("user_id", randomID) // user_ID is the name of my cookie, and randomid is the value that the cookie stores
+    req.session.user_id = randomID; // user_ID is the name of my cookie, and randomid is the value that the cookie stores
     res.redirect("/urls");
 
     console.log(users);
@@ -128,9 +133,9 @@ app.post("/register", (req, res) => {
 /* ADDING URLS to the urls database */
 
 app.get("/urls/new", (req, res) => {    //
-  let userID = req.cookies["user_id"];
+  let user = users[req.session.user_id];
   let templateVars = {
-    user: users[userID],
+    user: user,
     urls: urlDatabase
   }
   res.render("urls_new", templateVars);
@@ -141,8 +146,7 @@ app.get("/urls/new", (req, res) => {    //
 
 app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id; // shortURL var created
-  let userID = req.cookies["user_id"]; // userID = that specific cookie
-  let user = users[userID]; //navigating in users database, using the unique key
+  let user = users[req.session.user_id];// userID = that specific cookie
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
@@ -167,8 +171,7 @@ app.post("/urls/:id", (req, res) => {
 
 
 app.get("/login", (req, res) => {
-  let userID = req.cookies["user_id"];
-  let user = users[userID];
+  let user = users[req.session.user_id];
   let email = req.body.email
 
   let templateVars = {
@@ -186,54 +189,38 @@ app.post("/login", (req, res) => {
 
   let hashedPassword = bcrypt.hashSync(inputPassword, 10);
 
-  let found = false;
-  let foundPassword = false;
+  let foundUser;
 
   for (const userID in users) {
     if (email == users[userID].email) {
-      found = true;
+       foundUser = users[userID];
+       break;
     }
   }
-
-// if email has been found in the database, loop through passwords in database to find matching password and user login info
-  if (found == true) {
-    for (let findPW in users) {
-      let currentPassW = users[findPW].password;
-      if (bcrypt.compareSync(inputPassword, hashedPassword)) {
-        foundPassword = true;
-
-        res.cookie("user_id", users[findPW].id);
+  if (foundUser) {
+    if ( bcrypt.compareSync(foundUser.password, hashedPassword) ){
+        req.session.user_id = foundUser.id;
         res.redirect("/urls");
-
-      }
+        return;
     }
   }
-
-  if (found == false) {
-    res.status(403).send("Error 403 -- Not an email");
-
-
-  } if (foundPassword == false) {
-    res.status(403).send("Error 403 -- Not a password");
-  }
+  res.status(403).send("Error 403 -- Not an email");
 
 });
 
 app.post("/logout", (req, res) => {
-  res.cookie("user_id");
-  res.clearCookie("user_id");
+  req.session.user_id = null
   res.redirect("/");
 });
 
 
 app.post("/urls", (req, res) => {
-  let longURL = req.body.longURL
-  let userID = req.cookies["user_id"];
+  // let user = users[req.session.user_id];
   let shortURL = generateRandomString(); // random url being generated with the long URL you create
+  let longURL = urlDatabase[req.params.longURL];
 
   urlDatabase[shortURL] = {
-    "longURL": longURL,
-    "userID": userID
+    "longURL": longURL
   }
 
   res.redirect("/urls/" + shortURL); // brings you back to the urls database page along with the random string generated
