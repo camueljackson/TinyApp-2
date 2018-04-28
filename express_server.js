@@ -68,20 +68,8 @@ res.render("urls_home", templateVars)
 });
 
 
-// app.get("_header", (req, res) => {
-//   let userID = req.cookies["user_id"];
-//   let user = users[userID];
-//   let templateVars = {
-//     "user": users[userID]
-//   }
-//   res.render();
-// });
-
-
 /* LIST OF URLS */
 app.get("/urls", (req, res) => {
-  console.log(users);
-  console.log(req.session);
   let user = users[req.session.user_id];
   let templateVars = { // templateVars object contains "user" and "URL database"
   urls: urlDatabase,
@@ -146,11 +134,10 @@ app.get("/urls/new", (req, res) => {    //
 
 app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id; // shortURL var created
-  let user = users[req.session.user_id];// userID = that specific cookie
   let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: user
+    shortURL: shortURL,
+    longURL: urlDatabase[shortURL].longURL,
+    user: users[urlDatabase[shortURL].userID]
   };
 
   res.render("urls_show", templateVars);
@@ -217,12 +204,9 @@ app.post("/logout", (req, res) => {
 app.post("/urls", (req, res) => {
   // let user = users[req.session.user_id];
   let shortURL = generateRandomString(); // random url being generated with the long URL you create
-  let longURL = urlDatabase[req.params.longURL];
-
-  urlDatabase[shortURL] = {
-    "longURL": longURL
-  }
-
+  urlDatabase[shortURL] = {}
+  urlDatabase[shortURL].longURL = req.body.longURL
+  urlDatabase[shortURL].userID = req.session.user_id
   res.redirect("/urls/" + shortURL); // brings you back to the urls database page along with the random string generated
 });
 
@@ -242,8 +226,6 @@ app.get("/u/:shortURL", (req, res) => {
   let userID = req.cookies["user_id"];
   let user = users[userID];
   let wantedURL = urlDatabase[req.params.shortURL].longURL;
-  debugger
-  console.log(wantedURL+'ass');
   let templateVars = {
     user: user,
     longURL: wantedURL
