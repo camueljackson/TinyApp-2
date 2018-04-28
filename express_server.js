@@ -23,7 +23,6 @@ var urlDatabase = {
   "b2xVn2": {
     "longURL": "http://www.lighthouselabs.ca",
     "userID": "userRandomID",
-
   },
   "9sm5xK": {
     "longURL": "http://www.google.com",
@@ -64,14 +63,14 @@ res.render("urls_home", templateVars)
 });
 
 
-app.get("_header", (req, res) => {
-  let userID = req.cookies["user_id"];
-  let user = users[userID];
-  let templateVars = {
-    "user": users[userID]
-  }
-  res.render();
-});
+// app.get("_header", (req, res) => {
+//   let userID = req.cookies["user_id"];
+//   let user = users[userID];
+//   let templateVars = {
+//     "user": users[userID]
+//   }
+//   res.render();
+// });
 
 
 /* LIST OF URLS */
@@ -163,6 +162,7 @@ app.post("/urls/:id", (req, res) => {
     createdBy: req.cookie["user_id"]
   }
   res.redirect("/urls");
+
 });
 
 
@@ -199,11 +199,7 @@ app.post("/login", (req, res) => {
   if (found == true) {
     for (let findPW in users) {
       let currentPassW = users[findPW].password;
-<<<<<<< HEAD
       if (bcrypt.compareSync(inputPassword, hashedPassword)) {
-=======
-      if (bcrypt.compareSync(inputPassword, userPassword)) {
->>>>>>> c4c23281b92ceee81e9396a7f5dd3a58dfeb3971
         foundPassword = true;
 
         res.cookie("user_id", users[findPW].id);
@@ -240,13 +236,6 @@ app.post("/urls", (req, res) => {
     "userID": userID
   }
 
-  app.post("/urls", (req, res) => {
-
-
-});
-
-  // { shortURL: req.body.shortURL, userID: req.cookies.user_id}
-
   res.redirect("/urls/" + shortURL); // brings you back to the urls database page along with the random string generated
 });
 
@@ -265,13 +254,18 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   let userID = req.cookies["user_id"];
   let user = users[userID];
-  let longURL = urlDatabase[req.params.shortURL];
+  let wantedURL = urlDatabase[req.params.shortURL].longURL;
+  debugger
+  console.log(wantedURL+'ass');
   let templateVars = {
     user: user,
-    longURL: longURL
+    longURL: wantedURL
   };
-  res.redirect(longURL);
+
+  res.redirect(wantedURL);
 });
+
+
 
 
 // LISTEN
